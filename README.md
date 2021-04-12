@@ -1,6 +1,18 @@
 # iGrill
 Monitor your iGrill (mini, v2 or v3) or Pulse 2000 (with a Raspberry Pi 1/2/3) - and forward it to a mqtt-server
 
+# NOTE
+This is a new fork designed to be used with a new web app that I built.  I've broken compatibility with the
+original versions.  For the web app, please see the igrillWeb project.  General changes:
+
+* Added better bluetooth recovery, especially when the OS grabs the bluetooth connection before the monitor
+* Fixed a bug where ctl-c would not stop the app if the app was successfully connected and monitoring
+* Rebuilt the MQ sessions around using the HiveMQ public broker.  Now you don't need to worry about setting one up, but you still can if you'd like.'
+* Changed output to a single JSON message instead of using seperate channels with a payload of a single int.
+* Now using the bluetooth address in the topic so that each user will be guaranteed a unique topic name.
+
+I'm interested in others trying this out paired with the web app so let me know how it works for you!'
+
 ## What do you need
 ### Hardware
 * An iGrill Device (and at least one probe) - **iGrill mini**, **iGrill 2** or **iGrill 3** or a **Pulse2000**

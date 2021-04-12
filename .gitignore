@@ -62,3 +62,5 @@ target/
 /*.yaml
 /*.yml
 config/
+/.vs
+/.vscode

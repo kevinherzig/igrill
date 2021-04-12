@@ -13,8 +13,8 @@ config_requirements = {
     'children': {
         'devices': {
             'specs': {
-                'required_entries': {'name': str, 'type': str, 'address': str, 'topic': str, 'interval': int},
-                'optional_entries': {'publish_missing_probes': bool, 'missing_probe_value': str},
+                'required_entries': {'name': str, 'type': str, 'address': str, 'interval': int},
+                'optional_entries': {'publish_missing_probes': bool,'topic': str, 'missing_probe_value': str},
                 'list_type': dict
             }
         },
@@ -117,9 +117,12 @@ def publish(temperatures, battery, heating_element, client, base_topic, device_n
     if heating_element:
         message["heatingElement"] = heating_element
 
-    logging.debug(json.dumps(message))
+    logging.debug("Sending message: " + json.dumps(message) + " to topic [" + base_topic + "]")
 
-    client.publish("{0}/{1}".format(base_topic, device_name), json.dumps(message))
+    """
+    Since we're combining all probes to a single message, publish the message to just one topic.
+    """
+    client.publish(base_topic, json.dumps(message))
 
 
 def get_devices(device_config):

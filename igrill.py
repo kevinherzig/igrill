@@ -202,9 +202,9 @@ class DeviceThread(threading.Thread):
                  name,
                  address,
                  type,
-                 topic,
                  interval,
                  publish_missing_probes=False,
+                 topic = "none",
                  missing_probe_value="missing"):
 
         threading.Thread.__init__(self)
@@ -213,12 +213,22 @@ class DeviceThread(threading.Thread):
         self.address = address
         self.type = type
         self.mqtt_client = utils.mqtt_init(mqtt_config)
-        self.topic = topic
         self.interval = interval
         self.run_event = run_event
         self.publish_missing_probes = publish_missing_probes
         self.missing_probe_value = missing_probe_value
 
+        """
+        Since we're gearing to use public MQTT servers, use the device address as a topic partitioner.
+        I'll add this to the new web based monitor to enter your address
+        """
+        
+        if(topic == "none"):
+            self.topic = 'iGrillMon/' + address
+        else:
+            self.topic = topic.replace(':', "")
+        
+        
     def run(self):
         while self.run_event.is_set():
             try:
@@ -229,8 +239,8 @@ class DeviceThread(threading.Thread):
                     temperature = device.read_temperature(self.publish_missing_probes, self.missing_probe_value)
                     battery = device.read_battery()
                     heating_element = device.read_heating_elements()
+                    logging.debug("Calling device publish routine")
                     utils.publish(temperature, battery, heating_element, self.mqtt_client, self.topic, device.name)
-                    logging.debug("Published temp: {} and battery: {} to topic {}/{}".format(temperature, battery, self.topic, device.name))
                     logging.debug("Sleeping for {} seconds".format(self.interval))
                     time.sleep(self.interval)
             except Exception as e:
