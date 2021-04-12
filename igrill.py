@@ -3,6 +3,7 @@ from builtins import object
 import logging
 import threading
 import time
+import subprocess
 
 import bluepy.btle as btle
 import random
@@ -36,11 +37,13 @@ class IDevicePeripheral(btle.Peripheral):
     btle_lock = threading.Lock()
     has_battery = None
     has_heating_element = None
+    
 
     def __init__(self, address, name, num_probes, has_battery=True, has_heating_element=False):
         """
         Connects to the device given by address performing necessary authentication
         """
+        self.disconnectOs(address)
         logging.debug("Trying to connect to the device with address {}".format(address))
         with self.btle_lock:
             logging.debug("Calling btle.Peripheral.__init__ with lock: {}".format(id(self.btle_lock)))
@@ -135,6 +138,17 @@ class IDevicePeripheral(btle.Peripheral):
 
         return temps
 
+    """ 
+    Something in my setup grabs the BT connection making it not avaialable 
+    to the scanner.  This calls bluetoothctl telling it to release the connection
+    which seems to work every time.  I have a Raspberry Pi 4.
+    """
+
+    def disconnectOs(self, address):
+        logging.debug('Sending disconnect command to OS')
+        subprocess.call(['/usr/bin/bluetoothctl', 'disconnect', format(address)])
+
+
 
 class IGrillMiniPeripheral(IDevicePeripheral):
     """
@@ -211,7 +225,7 @@ class DeviceThread(threading.Thread):
                 logging.debug("Device thread {} (re)started, trying to connect to iGrill with address: {}".format(self.name, self.address))
                 device = self.device_types[self.type](self.address, self.name)
                 self.mqtt_client.reconnect()
-                while True:
+                while self.run_event.is_set():
                     temperature = device.read_temperature(self.publish_missing_probes, self.missing_probe_value)
                     battery = device.read_battery()
                     heating_element = device.read_heating_elements()

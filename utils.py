@@ -2,6 +2,8 @@ from builtins import range
 from config import strip_config
 from igrill import IGrillMiniPeripheral, IGrillV2Peripheral, IGrillV3Peripheral, Pulse2000Peripheral, DeviceThread
 import logging
+import json
+import datetime
 import paho.mqtt.client as mqtt
 
 config_requirements = {
@@ -99,14 +101,25 @@ def mqtt_init(mqtt_config):
 
 
 def publish(temperatures, battery, heating_element, client, base_topic, device_name):
+    
+    message = {
+        "timestamp": datetime.datetime.now().strftime("%d-%b-%Y (%H:%M:%S.%f)"),
+        "temperatures":{}
+    }
     for i in range(1, 5):
         if temperatures[i]:
-            client.publish("{0}/{1}/probe{2}".format(base_topic, device_name, i), temperatures[i])
+            message["temperatures"]["probe" + str(i)] = temperatures[i]
+        else:
+            message["temperatures"]["probe" + str(i)] = "N"
 
     if battery:
-        client.publish("{0}/{1}/battery".format(base_topic, device_name), battery)
+        message["battery"] = battery
     if heating_element:
-        client.publish("{0}/{1}/heating_element".format(base_topic, device_name), heating_element)
+        message["heatingElement"] = heating_element
+
+    logging.debug(json.dumps(message))
+
+    client.publish("{0}/{1}".format(base_topic, device_name), json.dumps(message))
 
 
 def get_devices(device_config):
