@@ -16,8 +16,7 @@ I'm interested in others trying this out paired with the web app so let me know 
 ## What do you need
 ### Hardware
 * An iGrill Device (and at least one probe) - **iGrill mini**, **iGrill 2** or **iGrill 3** or a **Pulse2000**
-* A bluetooth enabled computer - preferable a raspberry pi
-* A mqtt server as message receiver
+* A Raspberry Pi
 
 ## Installation
 1. clone this repo
