@@ -1,9 +1,27 @@
 # iGrill
-Monitor your iGrill (mini, v2 or v3) or Pulse 2000 (with a Raspberry Pi 1/2/3) - and forward it to a mqtt-server
+Monitor your iGrill (mini, v2 or v3) or Pulse 2000 (with a Raspberry Pi 1/2/3) via the web
 
 # NOTE
-This is a new fork designed to be used with a new web app that I built.  I've broken compatibility with the
-original versions.  For the web app, please see the igrillWeb project.  General changes:
+This is a new fork designed to be much easier to get up and running.  With this version
+you don't have to set up an MQTT server or web application.  For the MQTT server we use
+HiveMQ's public server. For monitoring you can use the igrillWeb which I've hosted
+for you at http://igrill.herzig.net
+
+Once you have your igrill connected you can type its bluetooth address in the web app
+and it will connect.  It does this by naming the MQTT topic after your devices bluetooth
+address.
+
+To see what this will look like you can see my iGrill which I try to keep up and running
+for demo purposes.  The link is here:
+
+http://igrillweb.herzig.net/index.html?address=D4:81:CA:22:AB:97
+
+I'm looking for people to test and also help with the HTML editing.  
+
+Enjoy!
+
+
+Changes over the original iGrillMon:
 
 * Added better bluetooth recovery, especially when the OS grabs the bluetooth connection before the monitor
 * Fixed a bug where ctl-c would not stop the app if the app was successfully connected and monitoring
