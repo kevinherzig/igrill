@@ -224,9 +224,9 @@ class DeviceThread(threading.Thread):
         """
         
         if(topic == "none"):
-            self.topic = 'iGrillMon/' + address
+            self.topic = 'iGrillMon/' +  address.upper()
         else:
-            self.topic = topic.replace(':', "")
+            self.topic = topic
         
         
     def run(self):
